@@ -19,31 +19,49 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { getApiKey, hasApiKey, setApiKey } from "@/lib/secureStore";
-import { providerFor } from "@/services/ai";
-import type { Settings } from "@/types";
+import { providerFor, SUPPORTED_PROVIDERS } from "@/services/ai";
+import type { LlmProviderId, Settings } from "@/types";
+
+const PROVIDER_HELP: Record<string, { label: string; keyUrl: string; hint: string }> = {
+  gemini: {
+    label: "Gemini API key",
+    keyUrl: "aistudio.google.com/apikey",
+    hint: "Free tier is region-limited; create the key in a new project with no billing.",
+  },
+  groq: {
+    label: "Groq API key",
+    keyUrl: "console.groq.com/keys",
+    hint: "Free tier needs no billing and works in most regions.",
+  },
+};
 
 export function SettingsView() {
   const settings = useSettingsStore((s) => s.settings);
   const update = useSettingsStore((s) => s.update);
+  const provider: LlmProviderId = settings?.provider ?? "gemini";
 
   const [apiKey, setApiKeyInput] = useState("");
   const [keySaved, setKeySaved] = useState(false);
   const [testing, setTesting] = useState<null | "ok" | "fail">(null);
+  const [testError, setTestError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Reload the stored key whenever the selected provider changes.
   useEffect(() => {
+    setTesting(null);
+    setTestError(null);
     void (async () => {
-      const existing = await getApiKey("gemini");
-      if (existing) setApiKeyInput(existing);
-      setKeySaved(await hasApiKey("gemini"));
+      const existing = await getApiKey(provider);
+      setApiKeyInput(existing ?? "");
+      setKeySaved(await hasApiKey(provider));
     })();
-  }, []);
+  }, [provider]);
 
   const onSaveKey = async () => {
     setBusy(true);
     setTesting(null);
     try {
-      await setApiKey("gemini", apiKey.trim());
+      await setApiKey(provider, apiKey.trim());
       setKeySaved(apiKey.trim().length > 0);
     } finally {
       setBusy(false);
@@ -52,15 +70,18 @@ export function SettingsView() {
 
   const onTestKey = async () => {
     setTesting(null);
+    setTestError(null);
     setBusy(true);
     try {
-      await setApiKey("gemini", apiKey.trim());
-      const intent = await providerFor("gemini").classifyIntent(
+      await setApiKey(provider, apiKey.trim());
+      await providerFor(provider).classifyIntent(
         "Help me plan my study schedule",
       );
-      setTesting(intent === "productivity" ? "ok" : "ok");
-    } catch {
+      setTesting("ok");
+    } catch (err) {
       setTesting("fail");
+      setTestError(err instanceof Error ? err.message : String(err));
+      console.error(`${provider} test failed:`, err);
     } finally {
       setBusy(false);
     }
@@ -101,18 +122,42 @@ export function SettingsView() {
         </p>
       </header>
 
-      {/* AI key (BYOK) */}
+      {/* AI provider + key (BYOK) */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <KeyRound className="size-4 text-primary" /> Gemini API key
+            <KeyRound className="size-4 text-primary" /> AI provider
           </CardTitle>
           <CardDescription>
-            Bring your own key (free tier). Stored securely on this device, never
-            uploaded.
+            Bring your own key. Stored securely on this device, never uploaded.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
+          {/* Provider picker */}
+          <div className="flex gap-2">
+            {SUPPORTED_PROVIDERS.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => void update("provider", p.id)}
+                className={cn(
+                  "flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                  provider === p.id
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "hover:bg-muted",
+                )}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{PROVIDER_HELP[provider]?.label}</span>
+            <span className="text-muted-foreground/80">
+              Get a key at {PROVIDER_HELP[provider]?.keyUrl}
+            </span>
+          </div>
+
           <div className="flex gap-2">
             <Input
               type="password"
@@ -122,7 +167,7 @@ export function SettingsView() {
                 setKeySaved(false);
                 setTesting(null);
               }}
-              placeholder="AIza…"
+              placeholder={provider === "gemini" ? "AIza…" : "gsk_…"}
             />
             <Button onClick={onSaveKey} disabled={busy}>
               {busy ? <Loader2 className="size-4 animate-spin" /> : "Save"}
@@ -141,11 +186,17 @@ export function SettingsView() {
               <span className="text-chart-2">Connection works ✓</span>
             )}
             {testing === "fail" && (
-              <span className="text-destructive">
-                Test failed — check the key
-              </span>
+              <span className="text-destructive">Test failed</span>
             )}
           </div>
+          {testing === "fail" && testError && (
+            <p className="mt-1 break-words rounded-md bg-destructive/10 p-2 text-xs text-destructive">
+              {testError}
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            {PROVIDER_HELP[provider]?.hint}
+          </p>
         </CardContent>
       </Card>
 

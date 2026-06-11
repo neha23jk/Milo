@@ -27,6 +27,8 @@ export const SCHEMA_STATEMENTS: string[] = [
     estimated_minutes INTEGER NOT NULL DEFAULT 30,
     status TEXT NOT NULL DEFAULT 'pending',
     scheduled_date TEXT,
+    fixed_start TEXT,
+    splittable INTEGER NOT NULL DEFAULT 1,
     tags TEXT NOT NULL DEFAULT '[]',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     completed_at TEXT
@@ -160,4 +162,38 @@ export const SEED_STATEMENTS: string[] = [
   `INSERT OR IGNORE INTO settings (key, value) VALUES ('defaultWorkEnd', '20:00');`,
   `INSERT OR IGNORE INTO settings (key, value) VALUES ('hideOnFullscreen', 'true');`,
   `INSERT OR IGNORE INTO settings (key, value) VALUES ('autostart', 'false');`,
+
+  // Achievements catalog. Criteria is a JSON {metric, gte} evaluated in TS.
+  achievement('first_steps', 'First Steps', 'Complete your first task', '🌱', 20, 5, 'tasks_completed', 1),
+  achievement('getting_going', 'Getting Going', 'Complete 10 tasks', '🚀', 50, 20, 'tasks_completed', 10),
+  achievement('centurion', 'Centurion', 'Complete 50 tasks', '🏆', 200, 100, 'tasks_completed', 50),
+  achievement('on_a_roll', 'On a Roll', 'Reach a 3-day streak', '🔥', 30, 10, 'streak', 3),
+  achievement('unstoppable', 'Unstoppable', 'Reach a 7-day streak', '⚡', 80, 40, 'streak', 7),
+  achievement('dedicated', 'Dedicated', 'Reach a 30-day streak', '💎', 300, 150, 'streak', 30),
+  achievement('rising_star', 'Rising Star', 'Reach level 5', '⭐', 0, 50, 'level', 5),
+  achievement('pro', 'Pro', 'Reach level 10', '👑', 0, 100, 'level', 10),
+];
+
+function achievement(
+  key: string,
+  name: string,
+  description: string,
+  icon: string,
+  xp: number,
+  coin: number,
+  metric: string,
+  gte: number,
+): string {
+  const criteria = JSON.stringify({ metric, gte }).replace(/'/g, "''");
+  return `INSERT OR IGNORE INTO achievements
+    (key, name, description, icon, xp_reward, coin_reward, criteria)
+    VALUES ('${key}', '${name}', '${description}', '${icon}', ${xp}, ${coin}, '${criteria}');`;
+}
+
+// Idempotent column-adds for DBs created before a column existed. SQLite has no
+// "ADD COLUMN IF NOT EXISTS", so each runs in its own try/catch (see db/index.ts)
+// and a "duplicate column" error is expected and ignored.
+export const MIGRATION_STATEMENTS: string[] = [
+  `ALTER TABLE tasks ADD COLUMN fixed_start TEXT;`,
+  `ALTER TABLE tasks ADD COLUMN splittable INTEGER NOT NULL DEFAULT 1;`,
 ];

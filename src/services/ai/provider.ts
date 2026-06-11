@@ -12,6 +12,10 @@ export interface PlannedTask {
   priority: Priority;
   estimatedMinutes: number;
   deadline?: string | null;
+  /** "HH:MM" if the event has a fixed start time (contest, meeting, class). */
+  fixedStart?: string | null;
+  /** False if the task needs one continuous block (contest, exam, deep call). */
+  splittable?: boolean;
   milestones: PlannedMilestone[];
 }
 

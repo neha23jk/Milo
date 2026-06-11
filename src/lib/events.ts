@@ -15,6 +15,7 @@ export type AppEvent =
   | "active_block_changed"
   | "task_reminder"
   | "milestone_completed"
+  | "profile_changed"
   | "level_up"
   | "achievement_unlocked"
   | "daily_report_ready"

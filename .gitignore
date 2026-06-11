@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Local SQLite database (created at runtime in app data dir)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Tauri-generated schemas
+src-tauri/gen/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

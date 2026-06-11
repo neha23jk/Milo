@@ -32,6 +32,8 @@ const PLAN_SCHEMA = {
           },
           estimatedMinutes: { type: "integer" },
           deadline: { type: "string", nullable: true },
+          fixedStart: { type: "string", nullable: true },
+          splittable: { type: "boolean" },
           milestones: {
             type: "array",
             items: {
@@ -85,6 +87,12 @@ export class GeminiProvider implements LlmProvider {
   ): Promise<StructuredPlan> {
     const prompt = `Date: ${ctx.date}. Available time: ${ctx.availableStart}-${ctx.availableEnd}.
 Break the user's plan into tasks with milestones and realistic minute estimates.
+
+Scheduling rules:
+- If an item has a fixed clock time (a real contest, meeting, class, exam), set "fixedStart" to that time as "HH:MM" (24h). Otherwise set it to null.
+- Set "splittable" to false for anything that needs one continuous unbroken sitting (contests, exams, mock interviews, long focused calls). Set it to true for practice/study/chores that can be done in pieces.
+- List tasks in the order they should be done (prerequisites first, e.g. practice before a virtual contest).
+
 User input:\n${input}`;
 
     const text = await callGemini({

@@ -1,5 +1,9 @@
 import Database from "@tauri-apps/plugin-sql";
-import { SCHEMA_STATEMENTS, SEED_STATEMENTS } from "./schema";
+import {
+  MIGRATION_STATEMENTS,
+  SCHEMA_STATEMENTS,
+  SEED_STATEMENTS,
+} from "./schema";
 
 let dbPromise: Promise<Database> | null = null;
 
@@ -25,6 +29,14 @@ async function initSchema(db: Database): Promise<void> {
 
   for (const stmt of SCHEMA_STATEMENTS) {
     await db.execute(stmt);
+  }
+  // Migrations for pre-existing DBs: ignore "duplicate column" on re-run.
+  for (const stmt of MIGRATION_STATEMENTS) {
+    try {
+      await db.execute(stmt);
+    } catch {
+      // column already exists — expected, safe to ignore.
+    }
   }
   for (const stmt of SEED_STATEMENTS) {
     await db.execute(stmt);

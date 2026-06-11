@@ -11,6 +11,8 @@ interface TaskRow {
   estimated_minutes: number;
   status: string;
   scheduled_date: string | null;
+  fixed_start: string | null;
+  splittable: number;
   tags: string;
   created_at: string;
   completed_at: string | null;
@@ -32,6 +34,8 @@ function mapTask(r: TaskRow): Task {
     estimatedMinutes: r.estimated_minutes,
     status: r.status as TaskStatus,
     scheduledDate: r.scheduled_date,
+    fixedStart: r.fixed_start,
+    splittable: r.splittable !== 0,
     tags,
     createdAt: r.created_at,
     completedAt: r.completed_at,
@@ -45,6 +49,8 @@ export interface CreateTaskInput {
   deadline?: string | null;
   estimatedMinutes?: number;
   scheduledDate?: string | null;
+  fixedStart?: string | null;
+  splittable?: boolean;
   tags?: string[];
 }
 
@@ -61,8 +67,8 @@ export async function listTasks(date?: string): Promise<Task[]> {
 export async function createTask(input: CreateTaskInput): Promise<number> {
   const { lastInsertId } = await execute(
     `INSERT INTO tasks
-       (title, description, priority, deadline, estimated_minutes, scheduled_date, tags)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       (title, description, priority, deadline, estimated_minutes, scheduled_date, fixed_start, splittable, tags)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       input.title,
       input.description ?? null,
@@ -70,6 +76,8 @@ export async function createTask(input: CreateTaskInput): Promise<number> {
       input.deadline ?? null,
       input.estimatedMinutes ?? 30,
       input.scheduledDate ?? null,
+      input.fixedStart ?? null,
+      input.splittable === false ? 0 : 1,
       JSON.stringify(input.tags ?? []),
     ],
   );

@@ -1,11 +1,18 @@
 import type { LlmProviderId } from "@/types";
 import { getSettings } from "@/services/settings";
 import { GeminiProvider } from "./gemini";
+import { GroqProvider } from "./groq";
 import type { LlmProvider } from "./provider";
 
 export * from "./provider";
 
-/** Returns the configured LLM provider. Only Gemini is wired up for now. */
+/** Providers that are fully implemented and selectable in Settings. */
+export const SUPPORTED_PROVIDERS: { id: LlmProviderId; label: string }[] = [
+  { id: "gemini", label: "Google Gemini" },
+  { id: "groq", label: "Groq" },
+];
+
+/** Returns the configured LLM provider. */
 export async function getProvider(): Promise<LlmProvider> {
   const { provider } = await getSettings();
   return providerFor(provider);
@@ -13,9 +20,10 @@ export async function getProvider(): Promise<LlmProvider> {
 
 export function providerFor(id: LlmProviderId): LlmProvider {
   switch (id) {
+    case "groq":
+      return new GroqProvider();
     case "gemini":
-      return new GeminiProvider();
-    // openai / claude / groq implementations land in later phases.
+    // openai / claude implementations land later.
     default:
       return new GeminiProvider();
   }

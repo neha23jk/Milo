@@ -17,6 +17,10 @@ export interface Task {
   status: TaskStatus;
   /** ISO date (YYYY-MM-DD) the task is scheduled for. */
   scheduledDate: string | null;
+  /** Anchored start time "HH:MM" for fixed events (contests, meetings). Null = flexible. */
+  fixedStart: string | null;
+  /** Whether the packer may break this task into chunks. False = one continuous block. */
+  splittable: boolean;
   /** JSON-encoded string array of tags. */
   tags: string[];
   createdAt: string;
@@ -89,6 +93,19 @@ export interface Profile {
   longestStreak: number;
   lastActiveDate: string | null;
   createdAt: string;
+}
+
+export interface Achievement {
+  id: number;
+  key: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  xpReward: number;
+  coinReward: number;
+  /** Whether the user has unlocked it. */
+  unlocked: boolean;
+  unlockedAt: string | null;
 }
 
 export type LlmProviderId = "gemini" | "openai" | "claude" | "groq";

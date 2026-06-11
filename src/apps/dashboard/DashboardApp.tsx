@@ -1,13 +1,25 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, Settings as SettingsIcon, Sparkles } from "lucide-react";
+import {
+  BarChart3,
+  CalendarClock,
+  CalendarDays,
+  Settings as SettingsIcon,
+  Trophy,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { listenApp } from "@/lib/events";
 import { useSettingsStore } from "@/stores/useSettingsStore";
 import { useTaskStore } from "@/stores/useTaskStore";
+import { useProfileStore } from "@/stores/useProfileStore";
 import { TodayView } from "./TodayView";
+import { TimelineView } from "./TimelineView";
+import { RewardsView } from "./RewardsView";
+import { AnalyticsView } from "./AnalyticsView";
 import { SettingsView } from "./SettingsView";
+import { ProfilePanel } from "./ProfilePanel";
+import { RewardToast } from "./RewardToast";
 
-type View = "today" | "settings";
+type View = "today" | "schedule" | "insights" | "rewards" | "settings";
 
 function applyTheme(theme: "light" | "dark" | "system") {
   const root = document.documentElement;
@@ -23,17 +35,23 @@ export function DashboardApp() {
   const settings = useSettingsStore((s) => s.settings);
   const loadSettings = useSettingsStore((s) => s.load);
   const loadTasks = useTaskStore((s) => s.load);
+  const loadProfile = useProfileStore((s) => s.load);
 
   useEffect(() => {
     void loadSettings();
     void loadTasks();
+    void loadProfile();
 
-    // Keep the dashboard in sync when the pet window changes data.
-    const unlisten = listenApp("tasks_changed", () => void loadTasks());
+    // Keep the dashboard in sync when either window changes data.
+    const unTasks = listenApp("tasks_changed", () => void loadTasks());
+    const unProfile = listenApp("profile_changed", () => void loadProfile());
+    const unLevel = listenApp("level_up", () => void loadProfile());
     return () => {
-      void unlisten.then((fn) => fn());
+      void unTasks.then((fn) => fn());
+      void unProfile.then((fn) => fn());
+      void unLevel.then((fn) => fn());
     };
-  }, [loadSettings, loadTasks]);
+  }, [loadSettings, loadTasks, loadProfile]);
 
   useEffect(() => {
     if (settings) applyTheme(settings.theme);
@@ -58,6 +76,24 @@ export function DashboardApp() {
             onClick={() => setView("today")}
           />
           <NavItem
+            icon={<CalendarClock className="size-4" />}
+            label="Schedule"
+            active={view === "schedule"}
+            onClick={() => setView("schedule")}
+          />
+          <NavItem
+            icon={<BarChart3 className="size-4" />}
+            label="Insights"
+            active={view === "insights"}
+            onClick={() => setView("insights")}
+          />
+          <NavItem
+            icon={<Trophy className="size-4" />}
+            label="Rewards"
+            active={view === "rewards"}
+            onClick={() => setView("rewards")}
+          />
+          <NavItem
             icon={<SettingsIcon className="size-4" />}
             label="Settings"
             active={view === "settings"}
@@ -65,18 +101,21 @@ export function DashboardApp() {
           />
         </nav>
 
-        <div className="mt-auto rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1 font-medium text-foreground">
-            <Sparkles className="size-3" /> Phase 1
-          </div>
-          Local-first · SQLite · BYOK Gemini
+        <div className="mt-auto">
+          <ProfilePanel />
         </div>
       </aside>
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto p-8">
-        {view === "today" ? <TodayView /> : <SettingsView />}
+        {view === "today" && <TodayView />}
+        {view === "schedule" && <TimelineView />}
+        {view === "insights" && <AnalyticsView />}
+        {view === "rewards" && <RewardsView />}
+        {view === "settings" && <SettingsView />}
       </main>
+
+      <RewardToast />
     </div>
   );
 }
