@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Mochi AI",
+  "version": "0.1.0",
+  "identifier": "com.mochiai.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Mochi AI",
+        "url": "index.html",
+        "width": 1100,
+        "height": 720,
+        "minWidth": 880,
+        "minHeight": 600,
+        "resizable": true,
+        "visible": true,
+        "center": true
+      },
+      {
+        "label": "pet",
+        "title": "Mochi",
+        "url": "pet.html",
+        "width": 240,
+        "height": 240,
+        "x": 1200,
+        "y": 600,
+        "resizable": false,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "shadow": false,
+        "focus": false,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}
