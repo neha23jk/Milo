@@ -1,65 +1,92 @@
 # Milo — AI-Powered Desktop Productivity Companion
 
-A lightweight desktop application that combines AI-driven scheduling, task breakdown, and a persistent virtual pet to help users plan their day, maintain focus, and gamify productivity.
+[![Tauri](https://img.shields.io/badge/Tauri-2-24292E?style=for-the-badge&logo=tauri)](https://tauri.app)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-7.0-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.0-06B6D4?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com)
+[![Zustand](https://img.shields.io/badge/Zustand-5.0-222222?style=for-the-badge)](https://github.com/pmndrs/zustand)
+[![SQLite](https://img.shields.io/badge/SQLite-embedded-003B57?style=for-the-badge&logo=sqlite)](https://www.sqlite.org)
+[![Gemini](https://img.shields.io/badge/Gemini-2.0%20Flash-EA4335?style=for-the-badge&logo=google)](https://ai.google.dev)
+[![Recharts](https://img.shields.io/badge/Recharts-2.15-8884D8?style=for-the-badge)](https://recharts.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-**Built with:** Tauri + React + TypeScript | **Database:** SQLite | **AI:** Google Gemini (BYOK)
+A lightweight desktop application combining AI-driven scheduling, deterministic task packing, and a persistent virtual pet to help you plan your day, maintain focus, and gamify productivity.
+
+> **Status**: MVP Phase (Phases 1–5 feature-complete)  
+> ⚠️ **Note**: Tauri runtime not yet tested locally. Frontend builds successfully; Rust toolchain integration pending.
+
+---
+
+## Quick Start
+
+```bash
+# Clone and install
+git clone https://github.com/neha23jk/Milo.git
+cd Milo && npm install
+
+# Run desktop app (requires Rust + Tauri)
+npm run tauri dev
+
+# Frontend-only preview (browser, no Tauri APIs)
+npm run dev
+npm run build  # Production bundle
+```
+
+**Setup Help**: See [Installation](#installation) for platform-specific details.
 
 ---
 
 ## Overview
 
-Milo is a **two-window Tauri desktop app** featuring:
+Milo is a **two-window Tauri desktop application** merging intelligent scheduling, event-driven state sync, and an always-on virtual pet:
 
-- **Intelligent Scheduling Engine**: AI breaks tasks into milestones; deterministic packer layouts them into conflict-free time blocks
-- **Always-On Desktop Pet**: Floating, transparent window that stays above all apps; reacts to productivity events
-- **Local-First Architecture**: All data persists in SQLite; offline-first with optional future cloud sync
-- **Gamification System**: XP, coins, streaks, achievements, and pet growth
-- **Daily Analytics & Reports**: Focus time tracking, task completion rates, AI-generated summaries
+- **Hybrid Scheduler**: AI (Gemini) handles subjective task decomposition; pure TypeScript deterministic packer handles exact time-slot layout
+- **Always-On Pet**: Floating, transparent window reacts to productivity events with emotion states
+- **Local-First**: SQLite embedded database; offline-ready; optional future cloud sync via PostgreSQL
+- **Gamification**: XP, coins, levels, streaks, 8 achievements, pet growth
+- **Analytics**: Focus tracking, daily AI-generated reports, Recharts weekly/monthly trends
+
+**Core Innovation**: Separates fuzzy (AI) logic from exact (deterministic) logic for reproducible, testable scheduling.
 
 ---
 
 ## Features
 
-### Core Productivity
-- **AI Task Breakdown**: Accepts raw task input and generates structured tasks + estimated milestones
-- **Smart Scheduling**: Deterministic time-slot packing respects fixed-time events, task splittability, priority, and deadlines
-- **Focus Timer**: Track active work sessions with desktop notifications
-- **Rescheduling**: Auto-reflow incomplete work when tasks slip or overrun
+### Productivity ✅
+- **AI Task Breakdown**: Gemini parses free-form input → structured tasks with milestones and time estimates
+- **Smart Scheduling**: Deterministic packer respects fixed-time events, priorities, deadlines, task splittability
+- **Task Management**: Full CRUD with real-time multi-window sync via Tauri events
+- **Focus Timer**: Track work sessions with live stopwatch; persists to database
+- **Rescheduling**: Auto-reflow incomplete work when tasks slip
 
-### Desktop Pet
-- **Persistent Floating Avatar**: Frameless, always-on-top, draggable window; optionally hides on fullscreen
-- **Emotion States**: Idle, Working, Thinking, Happy, Celebrating, Sad (powered by Rive animations)
-- **Pet Interactions**: Click to open quick task-entry; responds to productivity events
-- **System Tray Integration**: Show/hide dashboard, sleep pet, or quit from the tray menu
-- **Auto-Start on Login**: Runs in background via `tauri-plugin-autostart`
+### Desktop Pet ✅ / 🟡
+- **Persistent Floating Avatar**: 240×240 frameless, always-on-top, draggable, skip-taskbar window
+- **Emotion States**: 8 states (Idle, Working, Thinking, Happy, Celebrating, Sad, Sleeping)
+- **Pet Interactions**: Click to open task-entry dialog; responds to productivity events
+- **System Tray**: Show/hide dashboard, sleep pet, quit (app stays alive in background)
+- **Auto-Start**: Launches on login via `tauri-plugin-autostart`
+- **Rive Animations** 🟡: Scaffolded; emoji placeholder active (Rive canvas integration pending)
 
-### Gamification & Engagement
-- **XP & Coins**: Awarded for task and milestone completion
-- **Streaks**: Daily/weekly/monthly streak tracking with notifications at milestones
-- **Achievements**: 8 unlockable achievements (First Steps, On a Roll, Centurion, etc.)
-- **Inventory**: Purchase and equip pet accessories, hats, furniture, and backgrounds
+### Gamification ✅
+- **XP & Coins**: Awarded for task completion (+25 XP / +5 coins per task) and milestones (variable XP)
+- **Levels**: Dynamic curve (100 + (level-1)×50 XP per level); level-up triggers celebration + bonus coins
+- **Streaks**: Daily streak tracking (current/longest); milestone notifications at 3/7/30 day streaks
+- **Achievements**: 8 seeded achievements (First Steps, Getting Going, Centurion, On a Roll, Unstoppable, Dedicated, Rising Star, Pro)
+- **Profile**: Live profile panel with level ring, XP bar, streak counter, coin balance
+- **Inventory** ⬜: Tables seeded; shop UI not yet implemented
 
-### Analytics & Reports
-- **Daily Reports**: AI-generated summaries of completion rate, focus time, and productivity insights
-- **Weekly/Monthly Charts**: Visualize focus trends, productive hours, and streak history (Recharts)
-- **Activity Log**: Track XP awards, task completions, level-ups, and streaks
+### Analytics & Reports ✅
+- **Daily Reports**: AI-generated summaries; deterministic fallback when offline
+- **Focus Analytics**: Focus time by hour-of-day, 7-day focus trends, completion rate
+- **Charting**: Recharts area + bar charts (Insights tab)
+- **Activity Log**: Track XP awards, task completions, level-ups, streaks
 
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Desktop Framework** | Tauri v2 (native Rust shell, TypeScript app layer) |
-| **Frontend** | React 19 + TypeScript + Vite + Tailwind CSS |
-| **UI Components** | shadcn/ui + Radix UI + Lucide Icons |
-| **Animation** | Framer Motion + Rive (state-machine pet animations) |
-| **State Management** | Zustand (multi-window compatible) |
-| **Database** | SQLite (local, embedded) + `tauri-plugin-sql` |
-| **Data Visualization** | Recharts |
-| **AI Integration** | Google Gemini (free tier, BYOK API key) + `tauri-plugin-http` |
-| **Native Capabilities** | Tauri plugins: sql, store, notification, autostart, http, opener |
-| **Build Tools** | Vite (multi-page: `index.html` + `pet.html`), TypeScript compiler |
+### Notifications & Reminders ✅ / 🟡
+- **Desktop Notifications**: Via `tauri-plugin-notification` for task reminders
+- **Reminder Loop**: 30-second poller in pet window (stays active even if dashboard minimized)
+- **Per-Block Reminders**: One notification per scheduled task block at start time
+- **Smart Reminders** 🟡: Deadline-based reminders and snooze pending
 
 ---
 
@@ -68,24 +95,20 @@ Milo is a **two-window Tauri desktop app** featuring:
 ### Two-Window Model
 
 ```
-┌─────────────────────────────────────────┐
-│           Dashboard Window              │
-│  (main, 1100×720, normal frame)         │
-├─────────────────────────────────────────┤
-│ • Schedule timeline                     │
-│ • Active task card & focus timer        │
-│ • Task/milestone management             │
-│ • Analytics & achievements              │
-│ • Settings & API key management         │
-└─────────────────────────────────────────┘
-
-┌──────────────┐
-│ Pet Window   │  (pet, 240×240, transparent, always-on-top,
-│ (Rive        │   frameless, skip taskbar)
-│  Canvas)     │
-└──────────────┘
-  └─ System Tray Menu
-     (Show Dashboard / Sleep Pet / Quit)
+┌─────────────────────────────────────┐       ┌──────────────────┐
+│         Dashboard Window            │       │   Pet Window     │
+│      (1100×720, normal frame)       │◄─────►│  (240×240,       │
+├─────────────────────────────────────┤ Events│  transparent,    │
+│ • Schedule timeline & task cards    │       │  always-on-top,  │
+│ • Settings & API key management     │       │  frameless)      │
+│ • Analytics & achievements          │       │                  │
+│ • Focus timer                       │       │ • Pet canvas     │
+│ • Daily reports                     │       │ • Emotion state  │
+└─────────────────────────────────────┘       │ • Reminder loop  │
+          │                                   └──────────────────┘
+          └──► System Tray (Show / Sleep / Quit)
+               ↓
+          SQLite Database (local, shared)
 ```
 
 ### Data Flow
@@ -93,17 +116,40 @@ Milo is a **two-window Tauri desktop app** featuring:
 ```
 User Input (Tasks)
     ↓
-[AI Provider: Gemini]  (breaks tasks → structured JSON)
+┌─────────────────────────────────────────┐
+│ AI Provider: Gemini LLM (Fuzzy)         │
+│ • Parse free-form input                 │
+│ • Break into ordered milestones         │
+│ • Estimate time, assign priority        │
+│ • Detect fixed-time events              │
+│ • Return: structured JSON (schema-safe) │
+└─────────────────────────────────────────┘
     ↓
-[Deterministic Packer]  (TypeScript: layouts non-overlapping blocks)
+┌─────────────────────────────────────────┐
+│ Deterministic Packer (Pure TypeScript)  │
+│ • Sort flexible tasks by priority/date  │
+│ • Pin fixed-time events at exact times  │
+│ • Compute free gaps                     │
+│ • Flow tasks into gaps                  │
+│ • Insert Pomodoro breaks (50+10 min)    │
+│ • Return: blocks + overflow list        │
+└─────────────────────────────────────────┘
     ↓
-[SQLite]  (stores schedules + blocks)
+┌─────────────────────────────────────────┐
+│ SQLite Local Database                   │
+│ • Upsert schedules & blocks             │
+│ • Emit schedule_updated event           │
+└─────────────────────────────────────────┘
     ↓
-[Event Bus]  (emits schedule_updated)
+┌─────────────────────────────────────────┐
+│ Zustand Stores (Both Windows)           │
+│ • useScheduleStore                      │
+│ • useTaskStore                          │
+│ • usePetStore                           │
+│ • useProfileStore                       │
+└─────────────────────────────────────────┘
     ↓
-[Zustand Stores]  (both windows subscribe)
-    ↓
-[UI Renders]  (dashboard timeline, pet emotion updates)
+React UI Renders (Dashboard + Pet)
 ```
 
 ### Directory Structure
@@ -111,105 +157,170 @@ User Input (Tasks)
 ```
 src/
 ├── apps/
-│   ├── dashboard/          # Main productivity UI
-│   └── pet/                # Floating pet window
-├── components/             # React components (shared)
-├── db/                     # SQLite schema + query helpers
-│   ├── index.ts           # DB init, execute/query wrappers
-│   └── schema.ts          # Schema statements (run on startup)
-├── lib/                    # Utilities
-│   ├── events.ts          # Tauri event bus wrapper
-│   └── secureStore.ts     # API key storage (OS keychain)
-├── services/               # Business logic (domain modules)
-│   ├── ai/                # LLM providers (Gemini, Groq, etc.)
-│   │   ├── provider.ts    # Interface + types
-│   │   ├── gemini.ts      # Gemini implementation
-│   │   └── groq.ts        # Groq implementation
-│   ├── scheduler/          # Scheduling engine
-│   │   └── packer.ts      # Deterministic time-slot packing
-│   ├── tasks.ts           # Task CRUD
-│   ├── schedule.ts        # Schedule generation & retrieval
-│   ├── milestones.ts      # Milestone management
-│   ├── focus.ts           # Focus session tracking
-│   ├── gamification.ts    # XP, coins, levels, achievements
-│   ├── reports.ts         # Daily/weekly reports, analytics
-│   ├── notifications.ts   # Notification scheduling
-│   ├── pet.ts             # Pet state management
-│   ├── reminderLoop.ts    # Reminder scheduler (runs in pet window)
-│   └── settings.ts        # User settings
-├── stores/                 # Zustand stores (state subscriptions)
-│   ├── useTaskStore.ts
-│   ├── useScheduleStore.ts
-│   ├── usePetStore.ts
-│   ├── useProfileStore.ts
-│   ├── useMilestoneStore.ts
-│   ├── useFocusStore.ts
-│   └── useSettingsStore.ts
-├── types.ts               # TypeScript domain types (mirror DB schema)
-└── index.css              # Global styles + Tailwind directives
+│   ├── dashboard/
+│   │   ├── DashboardApp.tsx      # Shell + nav routing
+│   │   ├── TodayView.tsx         # Day planning + task mgmt
+│   │   ├── TimelineView.tsx      # Schedule visualization
+│   │   ├── AnalyticsView.tsx     # Charts + reports
+│   │   ├── RewardsView.tsx       # Achievements + profile
+│   │   └── SettingsView.tsx      # API key, preferences
+│   └── pet/
+│       └── PetApp.tsx            # Floating window, emotion, tray
+├── components/                   # Reusable React components
+├── db/
+│   ├── schema.ts                 # SQLite schema (14 tables)
+│   └── index.ts                  # execute/query helpers
+├── services/                     # Business logic modules
+│   ├── ai/
+│   │   ├── provider.ts           # LlmProvider interface
+│   │   ├── gemini.ts             # Gemini (active)
+│   │   ├── groq.ts               # Groq (partial)
+│   │   └── index.ts              # Factory
+│   ├── scheduler/
+│   │   └── packer.ts             # Deterministic packing (pure)
+│   ├── tasks.ts                  # Task CRUD
+│   ├── schedule.ts               # Schedule generation
+│   ├── milestones.ts             # Milestone ops
+│   ├── focus.ts                  # Focus session tracking
+│   ├── gamification.ts           # XP, coins, levels, streaks
+│   ├── reports.ts                # Daily reports, analytics
+│   ├── notifications.ts          # Notification scheduling
+│   ├── reminderLoop.ts           # 30s scheduler in pet window
+│   ├── pet.ts                    # Pet state mgmt
+│   └── settings.ts               # Settings persistence
+├── stores/                       # Zustand state (7 stores)
+├── lib/
+│   ├── events.ts                 # Typed Tauri event bus
+│   ├── secureStore.ts            # OS keychain API key storage
+│   └── datetime.ts               # Local time helpers
+├── types.ts                      # Domain TypeScript types
+└── index.css                     # Tailwind + globals
 
 src-tauri/
-├── src/
-│   └── lib.rs            # Rust entry point (plugins, tray, window events)
-├── tauri.conf.json       # Window config, build settings
-├── capabilities/         # Security permissions
-└── Cargo.toml            # Rust dependencies
+├── src/lib.rs                    # Entry: plugins, tray, events
+├── tauri.conf.json               # Window + build config
+├── capabilities/default.json     # Security permissions (Tauri v2)
+└── Cargo.toml                    # Rust dependencies
 ```
 
 ---
 
-## Scheduling Engine
+## Tech Stack
 
-The **hybrid scheduler** combines AI and deterministic logic:
+| Component | Tech | Version | Purpose |
+|-----------|------|---------|---------|
+| **Desktop** | Tauri | 2 | Native shell, minimal footprint |
+| **Frontend** | React + TypeScript + Vite | 19 / 5.8 / 7 | Reactive UI, type-safe, fast bundling |
+| **Styling** | Tailwind CSS | 4 | Utility-first CSS |
+| **Components** | shadcn/ui + Radix UI | Latest | Accessible, pre-built components |
+| **Icons** | Lucide React | 0.469+ | Consistent icon set |
+| **Animation** | Framer Motion | 12 | Micro-interactions |
+| **Pet Rendering** | Rive | Scaffolded | State-machine animations (pending) |
+| **State** | Zustand | 5 | Lightweight, multi-window sync |
+| **Database** | SQLite | Embedded | Local-first, offline |
+| **DB Plugin** | tauri-plugin-sql | 2 | SQL from TypeScript |
+| **Charts** | Recharts | 2.15 | React charting |
+| **HTTP** | tauri-plugin-http | 2 | Outbound calls (Gemini) |
+| **Notifications** | tauri-plugin-notification | 2 | OS desktop notifications |
+| **Storage** | tauri-plugin-store | 2 | Secure keychain storage |
+| **Auto-Start** | tauri-plugin-autostart | 2 | Launch on login |
 
-1. **AI Phase** (Gemini LLM):
-   - Parses user input (e.g., "DSA 2 hrs, Assignment 1 hr, EKAM 4 hrs")
-   - Breaks tasks into milestones with estimated time, priority, deadline
-   - Returns structured JSON adhering to a schema
+---
 
-2. **Packing Phase** (TypeScript, pure):
-   - Anchors fixed-time events (contests, meetings, exams) at their clock times
-   - Computes free gaps in the availability window
-   - Flows flexible tasks into gaps, respecting priority, deadline, splittability
-   - Inserts Pomodoro-style breaks (50 min focus → 10 min break)
-   - Returns conflict-free schedule or overflow list
+## Scheduling Engine: The Core
 
-3. **Persistence**:
-   - Writes `schedules` and `schedule_blocks` rows to SQLite
-   - Emits cross-window event (`schedule_updated`)
-   - Both windows re-render via Zustand subscription
+The hybrid scheduler separates **fuzzy** (subjective) work from **exact** (deterministic) work.
+
+### Phase 1: AI Breakdown (Fuzzy)
+
+Gemini LLM handles subjective decisions:
+
+**Input:**
+```
+DSA practice (2 hrs), EKAM development (4 hrs), writeup (1 hr)
+Available: 9 AM – 8 PM
+```
+
+**Output (JSON-validated):**
+```json
+{
+  "tasks": [
+    {
+      "title": "DSA Practice",
+      "priority": "high",
+      "estimatedMinutes": 120,
+      "milestones": [
+        { "title": "Review concepts", "estimatedMinutes": 30 },
+        { "title": "Solve problems", "estimatedMinutes": 60 },
+        { "title": "Review solutions", "estimatedMinutes": 30 }
+      ]
+    },
+    ...
+  ]
+}
+```
+
+### Phase 2: Deterministic Packing (Exact)
+
+Pure TypeScript algorithm ensures reproducible, conflict-free schedules. **No database access; fully testable.**
+
+**Algorithm:**
+1. Sort flexible tasks by priority, deadline, input order
+2. Pin fixed-time events (contests, meetings) at exact times
+3. Compute free gaps around anchored events
+4. Flow flexible tasks into gaps:
+   - **Non-splittable** (exam, contest): requires one contiguous gap or overflow
+   - **Splittable** (study, chores): broken into 50-min focus chunks with 10-min breaks
+5. Return non-overlapping blocks + overflow list
+
+**Output:**
+```
+9:00–9:10     Break
+9:10–10:00    DSA Part 1/3
+10:00–10:10   Break
+10:10–11:00   DSA Part 2/3
+11:00–12:00   EKAM Part 1/4
+12:00–13:00   Lunch Break
+...
+```
+
+**Code**: [`src/services/scheduler/packer.ts`](src/services/scheduler/packer.ts) (pure) + [`src/services/schedule.ts`](src/services/schedule.ts) (orchestration)
 
 ---
 
 ## AI Integration
 
-### Providers
-
-The app uses a swappable **`LlmProvider`** interface:
+### Provider Interface
 
 ```typescript
 interface LlmProvider {
+  readonly id: LlmProviderId;
   breakdownTasks(input: string, ctx: PlanContext): Promise<StructuredPlan>;
   generateSummary(context: string): Promise<string>;
   classifyIntent(message: string): Promise<Intent>;
 }
 ```
 
-**Implemented:**
-- **Gemini** (default): Free tier, BYOK
-- **Groq** (partial): Quick LLM calls
+### Implemented Providers
+
+| Provider | Status | Details |
+|----------|--------|---------|
+| **Gemini** | ✅ | Default; free tier; schema-validated structured output |
+| **Groq** | 🟡 | Scaffolded; partial implementation |
+| **OpenAI** | ⬜ | Interface-ready; implementation pending |
+| **Claude** | ⬜ | Interface-ready; implementation pending |
 
 ### Guardrails
 
-- **Intent Classification**: Classifies user requests as "productivity" or "off_topic"
-- **Structured Output**: Enforces JSON schema for task breakdown
-- **Scope Limiting**: System prompt keeps responses focused on productivity
+- **Intent Classification**: Classifies input as "productivity" or "off_topic" before answering
+- **Structured Output**: JSON schema enforcement ensures valid task structure
+- **Scope Limiting**: System prompt keeps responses productivity-focused
 
 ### Security
 
-- **API Key Storage**: Stored in OS keychain via `tauri-plugin-store`
-- **Never Hard-Coded**: Key is fetched at runtime from secure store
-- **User-Owned Keys**: Users manage their own API credentials
+- **API Keys**: Stored in OS keychain via `tauri-plugin-store` (never disk-persisted)
+- **BYOK Model**: Users bring their own free-tier API keys
+- **Test Function**: Settings panel includes key verification before saving
 
 ---
 
@@ -217,193 +328,222 @@ interface LlmProvider {
 
 ### Prerequisites
 
-- **Node.js** (v16+)
+- **Node.js** 16+, npm
 - **Rust toolchain** (via [rustup](https://rustup.rs/))
-- **WebView2** (Windows 11+; macOS/Linux via Tauri)
-- **Microsoft C++ Build Tools** (Windows only: MSVC linker for Rust)
+- **WebView2** runtime (Windows 11+; auto-handled on macOS/Linux)
+- **MSVC linker** (Windows only)
 
-### Setup (Windows)
+### Setup: Windows
 
 ```powershell
-# Install C++ build tools
+# Install MSVC build tools
 winget install --id Microsoft.VisualStudio.2022.BuildTools `
   --override "--quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
 
 # Install Rust
 winget install --id Rustlang.Rustup
-# Restart shell to update PATH
+# Restart PowerShell for PATH updates
 
-# Clone and install
+# Clone & install
 git clone https://github.com/neha23jk/Milo.git
-cd Milo
-npm install
+cd Milo && npm install
 ```
 
-### Setup (macOS/Linux)
+### Setup: macOS
 
 ```bash
-# Install Rust (if not already installed)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source $HOME/.cargo/env
 
-# Clone and install
 git clone https://github.com/neha23jk/Milo.git
-cd Milo
-npm install
+cd Milo && npm install
+```
+
+### Setup: Linux (Ubuntu/Debian)
+
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential curl libssl-dev libgtk-3-dev libayatana-appindicator3-dev
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+git clone https://github.com/neha23jk/Milo.git
+cd Milo && npm install
 ```
 
 ---
 
 ## Usage
 
-### Run Desktop App
+### Run Full App
 
 ```bash
 npm run tauri dev
 ```
 
-Launches both windows:
-- **Dashboard** (main): Productivity UI
-- **Pet** (floating overlay): Always-on-top virtual companion
+Launches both windows. On first run:
+- SQLite creates `mochi.db` in app data dir
+- Schema + seed data applied automatically
+- Pet appears on desktop
 
-On first launch, SQLite creates `mochi.db` in the app data directory and applies the schema.
-
-### Development (Browser Preview)
+### Frontend Development
 
 ```bash
-npm run dev              # Type-check + run Vite dev server
-npm run build            # Production bundle (both windows)
+npm run dev              # Vite dev server (browser preview)
+npm run build            # Production bundle
+npm run preview          # Preview build
 ```
 
-**Note:** In browser mode, Tauri APIs are no-ops (file access, notifications, database calls do nothing).
+**Note**: Browser mode stubs Tauri APIs (database, notifications are no-ops).
 
-### First Time
+### First-Time Setup
 
-1. Open dashboard → go to **Settings**
-2. Paste your **Google Gemini API key** (free tier from [Google AI Studio](https://aistudio.google.com))
-3. Click "Show Pet" or access via system tray
-4. Click pet to open task-entry dialog
-5. Enter your day's tasks; AI will break them down and generate a schedule
-
----
-
-## Project Structure at a Glance
-
-| File/Folder | Purpose |
-|-------------|---------|
-| `src/db/schema.ts` | SQLite schema + seed data (achievements, settings) |
-| `src/db/index.ts` | Query wrappers (`execute`, `query`) |
-| `src/services/schedule.ts` | Schedule generation, packing, block updates |
-| `src/services/scheduler/packer.ts` | Deterministic time-slot packing algorithm |
-| `src/services/ai/gemini.ts` | Gemini LLM integration (task breakdown, summaries) |
-| `src/services/gamification.ts` | XP, coins, levels, achievements, inventory |
-| `src/services/reports.ts` | Daily reports, analytics calculations |
-| `src/stores/` | Zustand stores (sync UI state with SQLite) |
-| `src/apps/dashboard/` | React components for main window |
-| `src/apps/pet/` | React components for floating pet |
-| `src-tauri/src/lib.rs` | Tauri setup: plugins, tray, window events |
-| `src-tauri/tauri.conf.json` | Window sizes, transparency, always-on-top |
-
----
-
-## Key Implementation Details
-
-### Deterministic Packing
-
-The packer ensures **reproducible, conflict-free schedules** without database mutations:
-
-- Sorts flexible tasks by priority, deadline, and input order
-- Pins anchored (fixed-time) tasks first
-- Computes free gaps around anchored tasks
-- Fills gaps greedily with focus-sized chunks + breaks
-- Returns overflow list for UI to show unscheduled work
-
-### Cross-Window Synchronization
-
-- **Event Bus**: `tauri-plugin-notification` + custom Tauri events
-- **Source of Truth**: SQLite (both windows query and write)
-- **Eventual Consistency**: Services emit events; Zustand stores subscribe
-- **No Polling**: Changes propagate via event listeners
-
-### Pet Window Always-On
-
-- **Window Config**: `transparent: true`, `alwaysOnTop: true`, `skipTaskbar: true`, `focus: false`
-- **System Tray**: Keeps the app alive; tray menu shows/hides dashboard or quits
-- **Auto-Start**: `tauri-plugin-autostart` enables launch-on-login
-- **Reminder Loop**: Scheduler running in pet window fires notifications without focus
+1. **Settings** → Paste Google Gemini API key ([get free tier](https://aistudio.google.com))
+2. **Test Key** → Verify connectivity
+3. **Show Pet** → Click or use system tray
+4. **Click Pet** → Opens task-entry dialog
+5. **Enter Day's Tasks** → "DSA 2 hrs, Homework 1 hr"
+6. **Generate Schedule** → AI breaks down, packer lays out timeline
+7. **Start Focus** → Reminders fire at block start times
+8. **Daily Report** → View AI summary + stats at day's end
 
 ---
 
 ## Database Schema
 
-Single-user, local-first design:
+14 tables (single-user, local-first):
 
 | Table | Purpose |
 |-------|---------|
-| `profile` | User level, XP, coins, streaks |
-| `tasks` | Task definitions (title, priority, deadline, status) |
-| `milestones` | Task decomposition with XP rewards |
-| `schedules` | Daily schedule metadata |
-| `schedule_blocks` | Time slots (task, break, or buffer) |
-| `focus_sessions` | Active work session tracking |
-| `reports` | Daily productivity reports |
+| `profile` | User level, XP, coins, streaks, pet type |
+| `tasks` | Task definitions, status, priority, deadline, fixed times |
+| `milestones` | Task decomposition, XP rewards |
+| `schedules` | Daily schedule metadata (date, availability window) |
+| `schedule_blocks` | Time slots (task / break / buffer) |
+| `focus_sessions` | Work sessions (start, end, duration) |
+| `reports` | Daily productivity reports + AI summaries |
 | `pet_state` | Pet emotion, growth stage, last interaction |
-| `achievements` | Unlockable achievements catalog |
-| `user_achievements` | User's unlocked achievements |
-| `inventory` | Pet accessories, hats, furniture |
+| `achievements` | Achievements catalog (8 seeded) |
+| `user_achievements` | Unlocked achievements + timestamps |
+| `inventory` | Pet accessories, hats, furniture, backgrounds |
 | `notifications` | Pending/fired desktop notifications |
-| `activity_log` | XP awards, task completions (analytics) |
-| `settings` | Key-value configuration |
+| `activity_log` | XP awards, task/milestone completions, level-ups, streaks |
+| `settings` | Key-value config (theme, work hours, provider, etc.) |
 
 ---
 
-## Development Roadmap
+## Development Status
 
-| Phase | Focus |
-|-------|-------|
-| **Phase 1** | Tauri + React scaffold, SQLite schema, TypeScript services |
-| **Phase 2** | Task CRUD, AI breakdown, deterministic packing, dashboard views |
-| **Phase 3** | Transparent pet window, Rive integration, click-through, system tray |
-| **Phase 4** | Notifications, daily reports, analytics charts |
-| **Phase 5** | Gamification (XP, levels, streaks, achievements) |
-| **Phase 6** | Advanced AI (auto-reschedule, energy-aware scheduling, provider options) |
-| **Phase 7** | Polish, performance, accessibility, testing |
-| **Future** | Cloud sync, PostgreSQL backend, cross-device |
+### Phases Complete
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| 1 | ✅ | Tauri scaffold, React + TS + Vite, SQLite, Zustand |
+| 2 | ✅ | Task CRUD, AI breakdown, deterministic packer, Schedule UI |
+| 3 | 🟡 | Pet window (floating, draggable, emoji sprite ✅; Rive pending) |
+| 4 | ✅ | Notifications, reminder loop (30s), cross-window sync |
+| 5 | ✅ | Gamification (XP, levels, streaks, 8 achievements, profile UI) |
+| 6 | 🟡 | Advanced AI (intent guardrail ✅; provider expansion ready) |
+| 7 | ⬜ | Polish, performance, accessibility, test suite |
+
+### Known Limitations
+
+⚠️ **Tauri Runtime Not Tested**: Code builds and type-checks; actual Tauri dev server never run (Rust toolchain setup pending).
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Rive Animations | 🟡 | Canvas scaffolded; emoji sprite active |
+| Click-Through Pet | 🟡 | `setIgnoreCursorEvents` not yet enabled |
+| Fullscreen Auto-Hide | 🟡 | Setting exists; logic pending |
+| Inventory / Shop | ⬜ | Tables seeded; UI not built |
+| Pet Growth Stages | ⬜ | Not tied to level yet |
+| Multi-Device Sync | ⬜ | Planned: PostgreSQL + offline replication |
+| Authentication | ⬜ | Single-user local MVP |
 
 ---
 
-## Known Limitations & Future Improvements
+## Implementation Highlights
 
-### Current
-- **No Authentication**: Single-user, local-only (MVP)
-- **AI Provider**: Gemini only (Groq scaffolded; OpenAI/Claude planned)
-- **Pet Animation**: Rive canvas not yet integrated
-- **Reminder Loop**: Partial implementation
-- **Mobile**: Desktop only (Tauri could support iOS/Android later)
+### Deterministic Packing
 
-### Planned
-- Multi-device sync via PostgreSQL + offline-first SQLite replication
-- Energy-aware scheduling (productivity curves, break recommendations)
-- Expanded pet animations and customization
-- Browser extension for quick task capture
-- Export/import for portability
+Located in [`src/services/scheduler/packer.ts`](src/services/scheduler/packer.ts):
+
+- **Pure**: No DB access, no Tauri calls, fully testable
+- **Reproducible**: Same input → same output
+- **Fair**: Respects priorities, deadlines, task splittability
+- **Overflow Aware**: Reports unscheduled work with reason (no_room vs. no_contiguous_gap)
+
+### Cross-Window Sync
+
+- **Source of Truth**: SQLite
+- **Change Notification**: Tauri event bus + custom events
+- **State Management**: Zustand subscribers in both windows
+- **Consistency**: Eventual consistency via event-driven updates
+- **No Polling**: All updates are push-based
+
+### Pet Window Always-On
+
+- **Window Config**: transparent + always-on-top + skip-taskbar + no-focus
+- **System Tray**: Keeps app alive when dashboard closed
+- **Reminder Loop**: 30-second poller (runs in pet window, fires desktop notifications)
+- **Auto-Start**: Launches on login
+
+---
+
+## Contributing
+
+1. Fork repo
+2. Create feature branch (`git checkout -b feature/xyz`)
+3. Make changes; ensure types pass (`npm run build`)
+4. Commit with clear messages
+5. Open PR with description
+
+**Architecture Principles**:
+- TypeScript-first; minimal Rust
+- Local-first; offline-ready
+- Pure functions where possible (packer is fully pure)
+- Event-driven state sync (no polling)
+- Secure by default (keychain-backed API keys)
+
+---
+
+## Files & References
+
+| File | Purpose |
+|------|---------|
+| [`idea.md`](idea.md) | Full specification + design rationale |
+| [`SETUP.md`](SETUP.md) | Detailed platform-specific setup |
+| [`work.md`](work.md) | Implementation status + next steps |
+| [`package.json`](package.json) | npm dependencies |
+| [`src-tauri/Cargo.toml`](src-tauri/Cargo.toml) | Rust dependencies |
+| [`vite.config.ts`](vite.config.ts) | Vite config (multi-page build) |
+
+---
+
+## FAQ
+
+**Q: Do I need Rust installed to develop?**  
+A: No for frontend-only work (`npm run dev`). Yes for full app testing (`npm run tauri dev`).
+
+**Q: Is my data secure?**  
+A: Yes. SQLite is local; API keys stored in OS keychain. No data leaves your machine without explicit action.
+
+**Q: Can I use a different LLM?**  
+A: Yes. The `LlmProvider` interface supports it. Only Gemini is wired; adding others is straightforward.
+
+**Q: Will this support multi-device sync?**  
+A: Planned. Future phase includes PostgreSQL backend + offline-first replication.
+
+**Q: Mobile support?**  
+A: Not in MVP scope. Tauri can target iOS/Android later.
 
 ---
 
 ## License
 
-MIT – See LICENSE file for details.
+MIT – See [`LICENSE`](LICENSE)
 
 ---
 
-## Notes for Developers
-
-- **TypeScript-First**: Minimal Rust; all logic in TypeScript via Tauri plugins
-- **Local-First**: No server dependency; works offline
-- **Deterministic Scheduling**: Packer is pure, testable, reproducible
-- **Event-Driven Sync**: Zustand + Tauri events keep multi-window state in sync
-- **Secure by Default**: API keys stored in OS keychain, never persisted to disk
-
----
-
-**Questions?** Open an issue or check the project specification in `idea.md`.
+**Built for focus and productivity.**
